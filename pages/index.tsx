@@ -16,6 +16,7 @@ const Home: NextPage = () => {
   const [from, setFrom] = useState<string>('2021-08-01')
   const [to, setTo] = useState<string>('2022-07-01')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
+  const [bias, setBias] = useState(1)
 
   const simResults = useMemo(()=>averagePriceSlope({
     prices: tokenPrice,
@@ -23,8 +24,9 @@ const Home: NextPage = () => {
     dailyExecutionUSD: executeAmount,
     initialFundsUSD: savings,
     slopeLengthDAYS: slope,
-    slopeIntensity: slopeIntensity
-  }), [tokenPrice, to, from, executeAmount, slope, slopeIntensity, savings])
+    slopeIntensity: slopeIntensity,
+    bias
+  }), [tokenPrice, to, from, executeAmount, slope, slopeIntensity, savings, bias])
 
   console.log('slopeIntensity', slopeIntensity)
   return (
@@ -76,7 +78,12 @@ const Home: NextPage = () => {
 
           <div className={styles.formGroup}>
             <label htmlFor='intensity'>Intensity ({slopeIntensity})</label>
-            <input name={"intensity"} value={slopeIntensity} onChange={(e) => setSlopeIntensity(parseFloat(e.target.value))} type={"range"} min="-20" max="100" step="0.1" />
+            <input name={"intensity"} value={slopeIntensity} onChange={(e) => setSlopeIntensity(parseFloat(e.target.value))} type={"range"} min="-2" max="10" step="0.1" />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor='bias'>Bias ({bias})</label>
+            <input name={"bias"} value={bias} onChange={(e) => setBias(parseFloat(e.target.value))} type={"range"} min="-1" max="1" step="0.01" />
           </div>
 
           {/* FREQ NOT YET IMPLEMENTED <div className={styles.formGroup}>

@@ -82,8 +82,8 @@ export const options: ChartOptions<"line"> = {
                 display: true,
                 text: 'Slope'
             },
-            min: -10,
-            max: 10,
+            min: 0,
+            max: 2,
         },
     },
 

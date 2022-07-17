@@ -15,6 +15,7 @@ type SimParams = {
     slopeIntensity: number,
     initialFundsUSD: number,
     dailyExecutionUSD: number,
+    bias: number
     prices: Price[]
     to?: string
     from?: string
@@ -25,7 +26,7 @@ function runSimOnPair(pair: { name: string; data: Price[] }) {
         const initialFundsUSD = 0
         const dailyFundsUSD = 10
 
-        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD: dailyFundsUSD, slopeIntensity: 1 })
+        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD: dailyFundsUSD, slopeIntensity: 1, bias: 1 })
         //console.log(`${pair.name} ${slopeLengthDAYS} ${result.tokenAmount} ${result.tokenInClassicDCA} ${result.portfolioValueUSD} ${result.ifHoldUSDInstead}`)
         //console.log(result.data)
     }
@@ -33,7 +34,7 @@ function runSimOnPair(pair: { name: string; data: Price[] }) {
 
 function clamp(num: number, min: number, max: number) { return Math.min(Math.max(num, min), max) }
 
-export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD, slopeIntensity }: SimParams) {
+export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD, slopeIntensity, bias }: SimParams) {
 
     const records: {
         i: number
@@ -66,16 +67,17 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
     for (let i = startDateIndex; i <= endDateIndex; i++) {
         const price = prices[i]
         if (!price) continue;
+        const prevAVG = getAVG(prices, i - 3, slopeLengthDAYS)
+        const currentAVG = getAVG(prices, i, slopeLengthDAYS)
 
-        const prevAVG = prices.slice(i - slopeLengthDAYS - slopeLengthDAYS, i - slopeLengthDAYS).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS
-        const pastAVG = prices.slice(i - slopeLengthDAYS, i).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS
+        const direction = currentAVG / prevAVG
+        const slope = direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
+            : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
+                : Math.pow(direction, slopeIntensity)
 
-        console.log('pastAVG', pastAVG, 'prevAVG', prevAVG)
-
-        const slope = Math.pow(pastAVG / prevAVG, slopeIntensity)
         ifHoldUSDInstead += dailyExecutionUSD
 
-        let targetInUSD = dailyExecutionUSD / slope
+        let targetInUSD = dailyExecutionUSD * slope
         const diffToTarget = dailyExecutionUSD - targetInUSD
 
         const operation = clamp(diffToTarget, -usdAtHand, dailyExecutionUSD)
@@ -90,7 +92,7 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         portfolioValueUSDSMART = (tokenAmountSMART * price.price)
         portfolioValueUSDCLASSIC = tokenAmountCLASSIC * price.price
 
-        records.push({ i, date: price.date, price: price.price, pastAVG, slope, tobuy: tobuyInUSD, usdAtHand, tokenAmountSMART: tokenAmountSMART, tokenAmountCLASSIC, portfolioValueUSDSMART, portfolioValueUSDCLASSIC, ifHoldUSDInstead })
+        records.push({ i, date: price.date, price: price.price, pastAVG: currentAVG, slope, tobuy: tobuyInUSD, usdAtHand, tokenAmountSMART: tokenAmountSMART, tokenAmountCLASSIC, portfolioValueUSDSMART, portfolioValueUSDCLASSIC, ifHoldUSDInstead })
 
     }
     return {
@@ -101,3 +103,7 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         ifHoldUSDInstead: records[records.length - 1]?.ifHoldUSDInstead,
     }
 }
+function getAVG(prices: Price[], i: number, slopeLengthDAYS: number) {
+    return prices.slice(i - slopeLengthDAYS, i).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS;
+}
+
