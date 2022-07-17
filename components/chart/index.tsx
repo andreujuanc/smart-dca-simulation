@@ -8,6 +8,8 @@ import {
     Title,
     Tooltip,
     Legend,
+    ChartOptions,
+    ChartData,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -21,65 +23,122 @@ ChartJS.register(
     Legend
 );
 
-export const options = {
+export const options: ChartOptions<"line"> = {
     responsive: true,
     interaction: {
         mode: 'index' as const,
         intersect: false,
     },
-    stacked: false,
+    color: '#CCC',
+
+    //stacked: false,
     plugins: {
         title: {
             display: true,
             text: 'Chart.js Line Chart - Multi Axis',
         },
     },
+
     scales: {
         y: {
             type: 'linear' as const,
             display: true,
             position: 'left' as const,
+            title: {
+                display: true,
+                text: 'Price'
+            },
         },
         y1: {
             type: 'linear' as const,
             display: true,
             position: 'right' as const,
+            title: {
+                display: true,
+                text: 'Value USD'
+            }
+        },
+        y2: {
+            type: 'linear' as const,
+            display: true,
+            position: 'left' as const,
             grid: {
                 drawOnChartArea: false,
             },
+            title: {
+                display: true,
+                text: 'Token Amount'
+            }
         },
     },
+   
 };
 
 
 
 
-export function Chart({ tokenPrice, classicDCAValues, smartDCAValues }: { tokenPrice: { date: string, price: number }[], classicDCAValues: number[], smartDCAValues: number[] }) {
+export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, usdSavingsAccountValue, classicDCAHolding, smartDCAHolding }:
+    {
+        tokenPrice: { date: string, price: number }[],
+        classicDCAValue: number[],
+        smartDCAValue: number[],
+        usdSavingsAccountValue: number[],
+        classicDCAHolding: number[],
+        smartDCAHolding: number[]
+    }) {
     const labels = tokenPrice.map(x => x.date)
 
-    const data = {
+    const data: ChartData<'line', number[], string> = {
         labels,
         datasets: [
             {
                 label: 'Token Price',
                 data: tokenPrice.map(x => x.price),
-                borderColor: 'rgb(99, 255, 132)',
-                backgroundColor: 'rgba(99, 255, 132, 0.5)',
+                borderColor: 'rgb(10, 210, 30)',
+                backgroundColor: 'rgba(10, 150, 30, 0.5)',
+                yAxisID: 'y',
+                pointBorderColor: 'rgb(0,0,0)',
+            },
+            {
+                label: 'Classic DCA Portfolio Value',
+                data: classicDCAValue,
+                borderColor: 'rgb(210, 10, 30)',
+                backgroundColor: 'rgba(210, 10, 30, 0.5)',
                 yAxisID: 'y1',
+                pointBorderColor: 'rgb(0,0,0)',
             },
             {
-                label: 'Dataset 1',
-                data: classicDCAValues,
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                label: 'Smart DCA Portfolio Value',
+                data: smartDCAValue,
+                borderColor: 'rgb(10, 30, 210)',
+                backgroundColor: 'rgba(10, 30, 210, 0.5)',
+                yAxisID: 'y1',
+                pointBorderColor: 'rgb(0,0,0)',
+            },
+            {
+                label: 'USD Savings Account',
+                data: usdSavingsAccountValue,
+                borderColor: 'rgb(210, 30, 210)',
+                backgroundColor: 'rgba(210, 30, 210, 0.5)',
+                yAxisID: 'y1',
+                pointBorderColor: 'rgb(0,0,0)',
+            },
+            {
+                label: 'Classic DCA Holding',
+                data: classicDCAHolding,
+                borderColor: 'rgb(140, 10, 30)',
+                backgroundColor: 'rgba(140, 10, 30, 0.5)',
                 yAxisID: 'y2',
+                pointBorderColor: 'rgb(0,0,0, 0)',
+                
             },
             {
-                label: 'Dataset 2',
-                data: smartDCAValues,
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                yAxisID: 'y3',
+                label: 'Smart DCA Holding',
+                data: smartDCAHolding,
+                borderColor: 'rgb(10, 30, 140)',
+                backgroundColor: 'rgba(10, 30, 140, 0.5)',
+                yAxisID: 'y2',
+                pointBorderColor: 'rgb(0,0,0, 0)',
             },
         ],
     };
