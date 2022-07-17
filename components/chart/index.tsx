@@ -34,10 +34,7 @@ export const options: ChartOptions<"line"> = {
 
     //stacked: false,
     plugins: {
-        title: {
-            display: true,
-            text: 'Chart.js Line Chart - Multi Axis',
-        },
+       
     },
 
     scales: {
@@ -117,16 +114,17 @@ export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHa
                 backgroundColor: 'rgba(10, 150, 30, 0.5)',
                 yAxisID: 'y',
                 pointBorderColor: 'rgb(0,0,0)',
+                hidden: true
             },
-            {
-                label: 'Slope',
-                data: slope,
-                pointRadius: 0,
-                borderColor: 'rgb(210, 210, 30, 0.8)',
-                backgroundColor: 'rgba(150, 150, 30, 0.15)',
-                yAxisID: 'y3',
-                pointBorderColor: 'rgb(0,0,0)',
-            },
+            // {
+            //     label: 'Slope',
+            //     data: slope,
+            //     pointRadius: 0,
+            //     borderColor: 'rgb(210, 210, 30, 0.8)',
+            //     backgroundColor: 'rgba(150, 150, 30, 0.15)',
+            //     yAxisID: 'y3',
+            //     pointBorderColor: 'rgb(0,0,0)',
+            // },
             {
                 label: 'Average',
                 data: averagePrice,
@@ -180,6 +178,7 @@ export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHa
                 backgroundColor: 'rgba(140, 10, 30, 0.5)',
                 yAxisID: 'y2',
                 pointBorderColor: 'rgb(0,0,0, 0)',
+                hidden: true
 
             },
             {
@@ -190,6 +189,7 @@ export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHa
                 backgroundColor: 'rgba(10, 30, 140, 0.5)',
                 yAxisID: 'y2',
                 pointBorderColor: 'rgb(0,0,0, 0)',
+                hidden: true
             },
         ],
     };

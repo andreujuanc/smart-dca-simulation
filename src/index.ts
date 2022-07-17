@@ -76,8 +76,8 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         const direction = currentAVG / prevAVG
         const slope = slopeIntensity == 0 ? direction
             : direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
-            : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
-                : Math.pow(direction, slopeIntensity)
+                : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
+                    : Math.pow(direction, slopeIntensity)
 
         let targetInUSD = dailyExecutionUSD / slope
         const diffToTarget = dailyExecutionUSD - targetInUSD
@@ -89,8 +89,8 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         tokenAmountSMART += tobuyInUSD / price.price
         tokenAmountCLASSIC += dailyExecutionUSD / price.price
 
-        portfolioValueUSDSMART = (tokenAmountSMART * price.price) 
-        portfolioValueUSDCLASSIC = tokenAmountCLASSIC * price.price
+        portfolioValueUSDSMART = (tokenAmountSMART * price.price) + usdAtHand
+        portfolioValueUSDCLASSIC = (tokenAmountCLASSIC * price.price) + initialFundsUSD
 
         records.push({ i, date: price.date, price: price.price, pastAVG: currentAVG, slope, tobuy: tobuyInUSD, usdAtHand, tokenAmountSMART: tokenAmountSMART, tokenAmountCLASSIC, portfolioValueUSDSMART, portfolioValueUSDCLASSIC, ifHoldUSDInstead })
 
@@ -99,7 +99,8 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         data: records,
         tokenAmount: records[records.length - 1]?.tokenAmountSMART,
         tokenInClassicDCA: records[records.length - 1]?.tokenAmountCLASSIC,
-        portfolioValueUSD: records[records.length - 1]?.portfolioValueUSDSMART,
+        portfolioValueUSD: records[records.length - 1]?.portfolioValueUSDSMART ,
+        portfolioValueClassicUSD: records[records.length - 1]?.portfolioValueUSDCLASSIC ,
         ifHoldUSDInstead: records[records.length - 1]?.ifHoldUSDInstead,
     }
 }

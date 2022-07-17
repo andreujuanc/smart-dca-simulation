@@ -13,12 +13,12 @@ const Home: NextPage = () => {
   const [bias, setBias] = useState(0.6)
   const [freq, setFreq] = useState(1)
   const [executeAmount, setExecuteAmount] = useState(3)
-  const [savings, setSavings]= useState(30)
+  const [savings, setSavings] = useState(30)
   const [from, setFrom] = useState<string>('2021-01-01')
   const [to, setTo] = useState<string>('2022-07-01')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
 
-  const simResults = useMemo(()=>averagePriceSlope({
+  const simResults = useMemo(() => averagePriceSlope({
     prices: tokenPrice,
     to, from,
     dailyExecutionUSD: executeAmount,
@@ -28,7 +28,6 @@ const Home: NextPage = () => {
     bias
   }), [tokenPrice, to, from, executeAmount, slope, slopeIntensity, savings, bias])
 
-  console.log('slopeIntensity', slopeIntensity)
   return (
     <div className={styles.container}>
       <Head>
@@ -48,6 +47,7 @@ const Home: NextPage = () => {
         }}>
           Smart DCA Simulation
         </h3>
+
         <div className={styles.card} style={{
           flexGrow: 0,
           flexShrink: 1
@@ -82,7 +82,7 @@ const Home: NextPage = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor='bias'>Bias ({bias})</label>
+            <label htmlFor='bias'>Bias ({bias}): {bias < 0 ? "DEGEN": "SAFE"}</label>
             <input name={"bias"} value={bias} onChange={(e) => setBias(parseFloat(e.target.value))} type={"range"} min="-1" max="1" step="0.01" />
           </div>
 
@@ -90,7 +90,7 @@ const Home: NextPage = () => {
             <label htmlFor='freq'>Freq</label>
             <input name={"freq"} value={freq} onChange={(e) => setFreq(parseInt(e.target.value))} type={"number"} />
           </div> */}
-  
+
 
           <div className={styles.formGroup}>
             <label htmlFor='from'>Range</label>
@@ -98,6 +98,33 @@ const Home: NextPage = () => {
             <input name={"to"} value={to} onChange={(e) => setTo(e.target.value)} type={"date"} />
           </div>
         </div>
+
+        <div id='vs' className={styles.card} style={{
+          flexGrow: 0,
+          flexShrink: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+
+        }}>
+          <sub>
+            Smart VS Classic
+          </sub>
+          <div style={{
+            flexGrow: 0,
+            flexShrink: 1,
+            display: 'flex',
+            flexDirection: 'row',
+          }}>
+            <div style={{ marginRight: '1rem' }}>
+              Total Tokens : {(simResults.tokenAmount / simResults.tokenInClassicDCA * 100 - 100).toFixed(2)}%
+            </div>
+            <div>
+              Portfolio Value : {((simResults.portfolioValueUSD / simResults.portfolioValueClassicUSD) * 100 - 100).toFixed(2)}%
+            </div>
+          </div>
+        </div>
+
         <div
           style={{
             flexGrow: 1,
