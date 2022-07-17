@@ -9,12 +9,12 @@ import { averagePriceSlope } from '../src'
 const Home: NextPage = () => {
   const [pair, setPair] = useState(prices[0].id)
   const [slope, setSlope] = useState(7)
-  const [slopeIntensity, setSlopeIntensity] = useState(8.4)
-  const [bias, setBias] = useState(0.6)
+  const [slopeIntensity, setSlopeIntensity] = useState(1.5)
+  const [bias, setBias] = useState(0.5)
   const [freq, setFreq] = useState(1)
   const [executeAmount, setExecuteAmount] = useState(3)
   const [savings, setSavings] = useState(30)
-  const [from, setFrom] = useState<string>('2021-01-01')
+  const [from, setFrom] = useState<string>('2022-01-01')
   const [to, setTo] = useState<string>('2022-07-01')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
 

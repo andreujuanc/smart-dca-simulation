@@ -34,7 +34,7 @@ export const options: ChartOptions<"line"> = {
 
     //stacked: false,
     plugins: {
-       
+
     },
 
     scales: {
@@ -68,20 +68,20 @@ export const options: ChartOptions<"line"> = {
                 text: 'Token Amount'
             }
         },
-        y3: {
-            type: 'linear' as const,
-            display: true,
-            position: 'left' as const,
-            grid: {
-                drawOnChartArea: false,
-            },
-            title: {
-                display: true,
-                text: 'Slope'
-            },
-            min: 0,
-            max: 2,
-        },
+        // y3: {
+        //     type: 'linear' as const,
+        //     display: true,
+        //     position: 'left' as const,
+        //     grid: {
+        //         drawOnChartArea: false,
+        //     },
+        //     title: {
+        //         display: true,
+        //         text: 'Slope'
+        //     },
+        //     min: 0,
+        //     max: 2,
+        // },
     },
 
 };
@@ -110,91 +110,87 @@ export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHa
                 label: 'Token Price',
                 data: tokenPrice.map(x => x.price),
                 pointRadius: 0,
-                borderColor: 'rgb(10, 210, 30)',
-                backgroundColor: 'rgba(10, 150, 30, 0.5)',
+                borderColor: 'rgba(50, 220, 50)',
+                backgroundColor: 'rgba(50, 220, 50)',
                 yAxisID: 'y',
-                pointBorderColor: 'rgb(0,0,0)',
                 hidden: true
             },
             // {
             //     label: 'Slope',
             //     data: slope,
             //     pointRadius: 0,
-            //     borderColor: 'rgb(210, 210, 30, 0.8)',
-            //     backgroundColor: 'rgba(150, 150, 30, 0.15)',
+            //     borderColor: 'rgba(150, 150, 30, 0.15)',
             //     yAxisID: 'y3',
-            //     pointBorderColor: 'rgb(0,0,0)',
+            //     borderColor: 'rgb(0,0,0)',
             // },
             {
-                label: 'Average',
+                label: 'Price AVG',
                 data: averagePrice,
                 pointRadius: 0,
-                borderColor: 'rgb(210, 120, 30)',
-                backgroundColor: 'rgba(210, 120, 30, 0.5)',
+                borderColor: 'rgba(225, 165, 0, 1)',
+                backgroundColor: 'rgba(225, 165, 0, 1)',
                 yAxisID: 'y',
-                pointBorderColor: 'rgb(0,0,0)',
+                hidden: true
             },
             {
                 label: 'Classic DCA Portfolio Value',
                 data: classicDCAValue,
                 pointRadius: 0,
-                borderColor: 'rgb(210, 10, 30)',
-                backgroundColor: 'rgba(210, 10, 30, 0.5)',
+                borderColor: 'rgba(220, 90, 80)',
+                backgroundColor: 'rgba(220, 90, 80)',
                 yAxisID: 'y1',
-                pointBorderColor: 'rgb(0,0,0)',
+                hidden: true
             },
             {
-                label: 'Smart DCA Token Value',
+                label: 'Smart DCA Portfolio Value',
                 data: smartDCAValue,
                 pointRadius: 0,
-                borderColor: 'rgb(10, 90, 210)',
-                backgroundColor: 'rgba(10, 90, 210, 0.5)',
+                borderColor: 'rgb(60, 100, 240)',
+                backgroundColor: 'rgb(60, 100, 240)',
                 yAxisID: 'y1',
-                pointBorderColor: 'rgb(0,0,0)',
+                hidden: true
             },
             {
                 label: 'Smart DCA USD Value',
                 data: smartUSDAtHand,
                 pointRadius: 0,
-                borderColor: 'rgb(10, 30, 210)',
-                backgroundColor: 'rgba(10, 30, 210, 0.5)',
+                borderColor: 'rgb(10, 30, 250)',
+                backgroundColor: 'rgb(10, 30, 250)',
                 yAxisID: 'y1',
-                pointBorderColor: 'rgb(0,0,0)',
+                hidden: true
             },
             {
                 label: 'USD Savings Account',
                 data: usdSavingsAccountValue,
                 pointRadius: 0,
-                borderColor: 'rgb(210, 30, 210)',
-                backgroundColor: 'rgba(210, 30, 210, 0.5)',
+                borderColor: 'rgb(190, 30, 250)',
+                backgroundColor: 'rgb(190, 30, 250)',
                 yAxisID: 'y1',
-                pointBorderColor: 'rgb(0,0,0)',
+                hidden: true
             },
             {
                 label: 'Classic DCA Holding',
                 data: classicDCAHolding,
-                 pointRadius: 0,
-                borderColor: 'rgb(140, 10, 30)',
-                backgroundColor: 'rgba(140, 10, 30, 0.5)',
+                pointRadius: 0,
+                borderColor: 'rgba(250, 120, 100)',
+                backgroundColor: 'rgba(250, 120, 100)',
                 yAxisID: 'y2',
-                pointBorderColor: 'rgb(0,0,0, 0)',
-                hidden: true
+                hidden: false
 
             },
             {
                 label: 'Smart DCA Holding',
                 data: smartDCAHolding,
                 pointRadius: 0,
-                borderColor: 'rgb(10, 30, 140)',
-                backgroundColor: 'rgba(10, 30, 140, 0.5)',
+                borderColor: 'rgba(100, 120, 255)',
+                backgroundColor: 'rgba(100, 120, 255)',
                 yAxisID: 'y2',
-                pointBorderColor: 'rgb(0,0,0, 0)',
-                hidden: true
+                hidden: false
             },
         ],
     };
 
     return <Line options={options} data={data} style={{
         // boxSizing: 'content-box',
-    }}  />;
+    }} />;
 }
