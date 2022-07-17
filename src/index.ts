@@ -12,6 +12,7 @@ type Price = { price: number; date: string }
 
 type SimParams = {
     slopeLengthDAYS: number,
+    slopeIntensity: number,
     initialFundsUSD: number,
     dailyExecutionUSD: number,
     prices: Price[]
@@ -24,7 +25,7 @@ function runSimOnPair(pair: { name: string; data: Price[] }) {
         const initialFundsUSD = 0
         const dailyFundsUSD = 10
 
-        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD: dailyFundsUSD })
+        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD: dailyFundsUSD, slopeIntensity: 1 })
         //console.log(`${pair.name} ${slopeLengthDAYS} ${result.tokenAmount} ${result.tokenInClassicDCA} ${result.portfolioValueUSD} ${result.ifHoldUSDInstead}`)
         //console.log(result.data)
     }
@@ -32,7 +33,7 @@ function runSimOnPair(pair: { name: string; data: Price[] }) {
 
 function clamp(num: number, min: number, max: number) { return Math.min(Math.max(num, min), max) }
 
-export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD }: SimParams) {
+export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD, slopeIntensity }: SimParams) {
 
     const records: {
         i: number
@@ -65,7 +66,7 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         if (!price) continue;
 
         const pastAVG = rangePrices.slice(i - slopeLengthDAYS, i).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS
-        const slope = Math.pow(price.price / pastAVG, 10)
+        const slope = Math.pow(pastAVG / price.price, slopeIntensity)
         ifHoldUSDInstead += dailyExecutionUSD
 
         let targetInUSD = dailyExecutionUSD / slope
@@ -75,12 +76,12 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         const tobuyInUSD = dailyExecutionUSD - operation
         usdAtHand += operation
 
-        console.log('targetInUSD', targetInUSD, 'tobuyInUSD', tobuyInUSD, 'usdAtHand', usdAtHand, 'operation', diffToTarget)
+        console.log(slope, 'targetInUSD', targetInUSD, 'tobuyInUSD', tobuyInUSD, 'usdAtHand', usdAtHand, 'operation', diffToTarget)
 
         tokenAmountSMART += tobuyInUSD / price.price
         tokenAmountCLASSIC += dailyExecutionUSD / price.price
 
-        portfolioValueUSDSMART = tokenAmountSMART * price.price
+        portfolioValueUSDSMART = (tokenAmountSMART * price.price) + usdAtHand
         portfolioValueUSDCLASSIC = tokenAmountCLASSIC * price.price
 
         records.push({ i, date: price.date, price: price.price, pastAVG, slope, tobuy: tobuyInUSD, usdAtHand, tokenAmountSMART: tokenAmountSMART, tokenAmountCLASSIC, portfolioValueUSDSMART, portfolioValueUSDCLASSIC, ifHoldUSDInstead })

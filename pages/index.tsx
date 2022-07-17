@@ -9,10 +9,11 @@ import { averagePriceSlope } from '../src'
 const Home: NextPage = () => {
   const [pair, setPair] = useState(prices[0].id)
   const [slope, setSlope] = useState(10)
+  const [slopeIntensity, setSlopeIntensity] = useState(1)
   const [freq, setFreq] = useState(1)
   const [executeAmount, setExecuteAmount] = useState(10)
   const [from, setFrom] = useState<string>('2022-01-01')
-  const [to, setTo] = useState<string>('2022-06-01')
+  const [to, setTo] = useState<string>('2022-05-01')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
 
   const simResults = averagePriceSlope({
@@ -20,10 +21,11 @@ const Home: NextPage = () => {
     to, from,
     dailyExecutionUSD: executeAmount,
     initialFundsUSD: 0,
-    slopeLengthDAYS: slope
+    slopeLengthDAYS: slope,
+    slopeIntensity: slopeIntensity
   })
 
-
+  console.log('slopeIntensity', slopeIntensity)
   return (
     <div className={styles.container}>
       <Head>
@@ -49,6 +51,12 @@ const Home: NextPage = () => {
             <label htmlFor='slope'>Slope</label>
             <input name={"slope"} value={slope} onChange={(e) => setSlope(parseInt(e.target.value))} type={"number"} />
           </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor='intensity'>Slope</label>
+            <input name={"intensity"} value={slopeIntensity} onChange={(e) => setSlopeIntensity(parseFloat(e.target.value))} type={"range"} min="-10" max="10" step="0.1" />
+          </div>
+
           {/* FREQ NOT YET IMPLEMENTED <div className={styles.formGroup}>
             <label htmlFor='freq'>Freq</label>
             <input name={"freq"} value={freq} onChange={(e) => setFreq(parseInt(e.target.value))} type={"number"} />
@@ -74,6 +82,9 @@ const Home: NextPage = () => {
 
           classicDCAHolding={simResults.data.map(x => x.tokenAmountCLASSIC)}
           smartDCAHolding={simResults.data.map(x => x.tokenAmountSMART)}
+
+          slope={simResults.data.map(x => x.slope)}
+          averagePrice={simResults.data.map(x => x.pastAVG)}
         />
       </main>
 
