@@ -6,14 +6,14 @@ async function main() {
     }
 }
 
-main()
+//main()
 
 type Price = { price: number; date: string }
 
 type SimParams = {
     slopeLengthDAYS: number,
     initialFundsUSD: number,
-    dailyFundsUSD: number,
+    dailyExecutionUSD: number,
     prices: Price[]
     to?: string
     from?: string
@@ -24,12 +24,15 @@ function runSimOnPair(pair: { name: string; data: Price[] }) {
         const initialFundsUSD = 0
         const dailyFundsUSD = 10
 
-        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, dailyFundsUSD })
-        console.log(`${pair.name} ${slopeLengthDAYS} ${result.tokenAmount} ${result.tokenInClassicDCA} ${result.portfolioValueUSD} ${result.ifHoldUSDInstead}`)
+        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD: dailyFundsUSD })
+        //console.log(`${pair.name} ${slopeLengthDAYS} ${result.tokenAmount} ${result.tokenInClassicDCA} ${result.portfolioValueUSD} ${result.ifHoldUSDInstead}`)
+        //console.log(result.data)
     }
 }
 
-export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFundsUSD, dailyFundsUSD }: SimParams) {
+function clamp(num: number, min: number, max: number) { return Math.min(Math.max(num, min), max) }
+
+export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD }: SimParams) {
 
     const records: {
         i: number
@@ -55,7 +58,7 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
 
     let rangePrices = prices.filter(x => (!from || x.date >= from) && (!to || x.date <= to))
     const startDateIndex = prices.findIndex(x => x.date === rangePrices[0].date)
-    rangePrices = prices.filter((_, i) => i <= startDateIndex && i > startDateIndex - slopeLengthDAYS ).concat(rangePrices)
+    rangePrices = prices.filter((_, i) => i <= startDateIndex && i > startDateIndex - slopeLengthDAYS).concat(rangePrices)
 
     for (let i = slopeLengthDAYS; i < prices.length; i++) {
         const price = rangePrices[i]
@@ -63,22 +66,25 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
 
         const pastAVG = rangePrices.slice(i - slopeLengthDAYS, i).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS
         const slope = Math.pow(price.price / pastAVG, 10)
-        ifHoldUSDInstead += dailyFundsUSD
+        ifHoldUSDInstead += dailyExecutionUSD
 
-        const tobuyInUSD = dailyFundsUSD / slope
+        let targetInUSD = dailyExecutionUSD / slope
+        const diffToTarget = dailyExecutionUSD - targetInUSD
 
-        if (tobuyInUSD > dailyFundsUSD && usdAtHand > 0)
-            usdAtHand -= (tobuyInUSD - dailyFundsUSD)
-        else if (tobuyInUSD < dailyFundsUSD)
-            usdAtHand += (dailyFundsUSD - tobuyInUSD)
+        const operation = clamp(diffToTarget, -usdAtHand, dailyExecutionUSD)
+        const tobuyInUSD = dailyExecutionUSD - operation
+        usdAtHand += operation
+
+        console.log('targetInUSD', targetInUSD, 'tobuyInUSD', tobuyInUSD, 'usdAtHand', usdAtHand, 'operation', diffToTarget)
 
         tokenAmountSMART += tobuyInUSD / price.price
-        tokenAmountCLASSIC += dailyFundsUSD / price.price
+        tokenAmountCLASSIC += dailyExecutionUSD / price.price
 
-        portfolioValueUSDSMART = usdAtHand + (tokenAmountSMART * price.price)
+        portfolioValueUSDSMART = tokenAmountSMART * price.price
         portfolioValueUSDCLASSIC = tokenAmountCLASSIC * price.price
 
         records.push({ i, date: price.date, price: price.price, pastAVG, slope, tobuy: tobuyInUSD, usdAtHand, tokenAmountSMART: tokenAmountSMART, tokenAmountCLASSIC, portfolioValueUSDSMART, portfolioValueUSDCLASSIC, ifHoldUSDInstead })
+
     }
     return {
         data: records,

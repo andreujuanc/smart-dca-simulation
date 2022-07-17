@@ -77,11 +77,12 @@ export const options: ChartOptions<"line"> = {
 
 
 
-export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, usdSavingsAccountValue, classicDCAHolding, smartDCAHolding }:
+export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHand, usdSavingsAccountValue, classicDCAHolding, smartDCAHolding }:
     {
         tokenPrice: { date: string, price: number }[],
         classicDCAValue: number[],
         smartDCAValue: number[],
+        smartUSDAtHand: number[],
         usdSavingsAccountValue: number[],
         classicDCAHolding: number[],
         smartDCAHolding: number[]
@@ -108,8 +109,16 @@ export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, usdSavingsAc
                 pointBorderColor: 'rgb(0,0,0)',
             },
             {
-                label: 'Smart DCA Portfolio Value',
+                label: 'Smart DCA Token Value',
                 data: smartDCAValue,
+                borderColor: 'rgb(10, 30, 210)',
+                backgroundColor: 'rgba(10, 30, 210, 0.5)',
+                yAxisID: 'y1',
+                pointBorderColor: 'rgb(0,0,0)',
+            },
+            {
+                label: 'Smart DCA USD Value',
+                data: smartUSDAtHand,
                 borderColor: 'rgb(10, 30, 210)',
                 backgroundColor: 'rgba(10, 30, 210, 0.5)',
                 yAxisID: 'y1',

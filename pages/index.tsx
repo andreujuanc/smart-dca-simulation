@@ -12,13 +12,13 @@ const Home: NextPage = () => {
   const [freq, setFreq] = useState(1)
   const [executeAmount, setExecuteAmount] = useState(10)
   const [from, setFrom] = useState<string>('2022-01-01')
-  const [to, setTo] = useState<string>('2022-02-01')
+  const [to, setTo] = useState<string>('2022-06-01')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
 
   const simResults = averagePriceSlope({
     prices: tokenPrice,
     to, from,
-    dailyFundsUSD: executeAmount,
+    dailyExecutionUSD: executeAmount,
     initialFundsUSD: 0,
     slopeLengthDAYS: slope
   })
@@ -69,7 +69,9 @@ const Home: NextPage = () => {
           tokenPrice={simResults.data.map(x => ({ date: x.date, price: x.price }))}
           classicDCAValue={simResults.data.map(x => x.portfolioValueUSDCLASSIC)}
           smartDCAValue={simResults.data.map(x => x.portfolioValueUSDSMART)}
+          smartUSDAtHand={simResults.data.map(x => x.usdAtHand)}
           usdSavingsAccountValue={simResults.data.map(x => x.ifHoldUSDInstead)}
+
           classicDCAHolding={simResults.data.map(x => x.tokenAmountCLASSIC)}
           smartDCAHolding={simResults.data.map(x => x.tokenAmountSMART)}
         />
