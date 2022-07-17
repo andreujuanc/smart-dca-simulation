@@ -84,10 +84,12 @@
 .card .formGroup{
   margin: 0.3rem 0.6rem;
   line-height: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .card .formGroup label{
-  margin-right: 0.15rem;
+  margin-bottom: 0.2rem;
 }
 
 .logo {

@@ -74,7 +74,8 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         const currentAVG = getAVG(prices, i, slopeLengthDAYS)
 
         const direction = currentAVG / prevAVG
-        const slope = direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
+        const slope = slopeIntensity == 0 ? direction
+            : direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
             : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
                 : Math.pow(direction, slopeIntensity)
 
@@ -88,7 +89,7 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         tokenAmountSMART += tobuyInUSD / price.price
         tokenAmountCLASSIC += dailyExecutionUSD / price.price
 
-        portfolioValueUSDSMART = (tokenAmountSMART * price.price)
+        portfolioValueUSDSMART = (tokenAmountSMART * price.price) 
         portfolioValueUSDCLASSIC = tokenAmountCLASSIC * price.price
 
         records.push({ i, date: price.date, price: price.price, pastAVG: currentAVG, slope, tobuy: tobuyInUSD, usdAtHand, tokenAmountSMART: tokenAmountSMART, tokenAmountCLASSIC, portfolioValueUSDSMART, portfolioValueUSDCLASSIC, ifHoldUSDInstead })
