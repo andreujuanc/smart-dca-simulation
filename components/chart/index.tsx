@@ -172,25 +172,25 @@ export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHa
                 yAxisID: 'y1',
                 pointBorderColor: 'rgb(0,0,0)',
             },
-            // {
-            //     label: 'Classic DCA Holding',
-            //     data: classicDCAHolding,
-            //      pointRadius: 0,
-            //     borderColor: 'rgb(140, 10, 30)',
-            //     backgroundColor: 'rgba(140, 10, 30, 0.5)',
-            //     yAxisID: 'y2',
-            //     pointBorderColor: 'rgb(0,0,0, 0)',
+            {
+                label: 'Classic DCA Holding',
+                data: classicDCAHolding,
+                 pointRadius: 0,
+                borderColor: 'rgb(140, 10, 30)',
+                backgroundColor: 'rgba(140, 10, 30, 0.5)',
+                yAxisID: 'y2',
+                pointBorderColor: 'rgb(0,0,0, 0)',
 
-            // },
-            // {
-            //     label: 'Smart DCA Holding',
-            //     data: smartDCAHolding,
-            //     pointRadius: 0,
-            //     borderColor: 'rgb(10, 30, 140)',
-            //     backgroundColor: 'rgba(10, 30, 140, 0.5)',
-            //     yAxisID: 'y2',
-            //     pointBorderColor: 'rgb(0,0,0, 0)',
-            // },
+            },
+            {
+                label: 'Smart DCA Holding',
+                data: smartDCAHolding,
+                pointRadius: 0,
+                borderColor: 'rgb(10, 30, 140)',
+                backgroundColor: 'rgba(10, 30, 140, 0.5)',
+                yAxisID: 'y2',
+                pointBorderColor: 'rgb(0,0,0, 0)',
+            },
         ],
     };
 

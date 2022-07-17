@@ -63,11 +63,14 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
     const endDate = rangePrices[rangePrices.length - 1]?.date
     const startDateIndex = prices.findIndex(x => x.date === startDate)
     const endDateIndex = prices.findIndex(x => x.date === endDate)
-
+    console.clear()
     for (let i = startDateIndex; i <= endDateIndex; i++) {
         const price = prices[i]
         if (!price) continue;
-        const prevAVG = getAVG(prices, i - 3, slopeLengthDAYS)
+
+        ifHoldUSDInstead += dailyExecutionUSD
+
+        const prevAVG = getAVG(prices, i - slopeLengthDAYS, slopeLengthDAYS)
         const currentAVG = getAVG(prices, i, slopeLengthDAYS)
 
         const direction = currentAVG / prevAVG
@@ -75,16 +78,12 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
             : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
                 : Math.pow(direction, slopeIntensity)
 
-        ifHoldUSDInstead += dailyExecutionUSD
-
         let targetInUSD = dailyExecutionUSD / slope
         const diffToTarget = dailyExecutionUSD - targetInUSD
 
         const operation = clamp(diffToTarget, -usdAtHand, dailyExecutionUSD)
         const tobuyInUSD = dailyExecutionUSD - operation
         usdAtHand += operation
-
-        //console.log(slope, 'targetInUSD', targetInUSD, 'tobuyInUSD', tobuyInUSD, 'usdAtHand', usdAtHand, 'operation', diffToTarget)
 
         tokenAmountSMART += tobuyInUSD / price.price
         tokenAmountCLASSIC += dailyExecutionUSD / price.price

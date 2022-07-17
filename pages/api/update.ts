@@ -10,8 +10,9 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Data>
 ) {
-    await savePrices()
-    res.status(200).json({ name: 'John Doe' })
+    await savePrices('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', 'eth-usd')
+    await savePrices('0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', 'btc-usd')
+    res.status(200).json({ name: 'Price updated' })
 }
 
 
@@ -26,10 +27,10 @@ async function writeFileAsync(file: string, data: string) {
     });
 }
 
-async function savePrices() {
-    const from = '2021-07-01';
-    const to = '2022-07-01';
-    const token = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+async function savePrices(address: string, name: string) {
+    const from = '2020-01-01';
+    const to = new Date().toISOString().split('T')[0];
+    const token = address;
 
     const url = `https://api.covalenthq.com/v1/pricing/historical_by_addresses_v2/1/USD/${token}/?quote-currency=USD&format=JSON&from=${from}&to=${to}&prices-at-asc=true&key=ckey_0f1f054c0b774a74accad72f551`;
     const response = await fetch(url);
@@ -40,8 +41,8 @@ async function savePrices() {
     }));
     // save data in a file
     const data = JSON.stringify(prices);
-    const file = __dirname + '/../../../../data/prices.json';
+    const file = __dirname + `/../../../../data/${name}.json`;
     await writeFileAsync(file, data);
 
-    console.log(prices.length);
+    console.log('UPDATED', name, prices.length);
 }
