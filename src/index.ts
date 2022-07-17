@@ -77,7 +77,7 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
 
         ifHoldUSDInstead += dailyExecutionUSD
 
-        let targetInUSD = dailyExecutionUSD * slope
+        let targetInUSD = dailyExecutionUSD / slope
         const diffToTarget = dailyExecutionUSD - targetInUSD
 
         const operation = clamp(diffToTarget, -usdAtHand, dailyExecutionUSD)
