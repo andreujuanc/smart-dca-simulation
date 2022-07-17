@@ -34,11 +34,21 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h3 className={styles.title}>
+      <main className={styles.main}
+        style={{
+          height: '100%',
+        }}
+      >
+        <h3 className={styles.title} style={{
+          flexShrink: 1,
+          flexGrow: 0
+        }}>
           Smart DCA Simulation
         </h3>
-        <div className={styles.card}>
+        <div className={styles.card} style={{
+          flexGrow: 0,
+          flexShrink: 1
+        }}>
           <div className={styles.formGroup}>
             <label htmlFor='pair'>Pair</label>
             <select name="pair" onChange={(e) => setPair(e.target.value)} value={pair} >
@@ -72,20 +82,26 @@ const Home: NextPage = () => {
             <input name={"to"} value={to} onChange={(e) => setTo(e.target.value)} type={"date"} />
           </div>
         </div>
+        <div
+          style={{
+            flexGrow: 1,
+            width: '100%',
+            height: '100%'
+          }}>
+          <Chart
+            tokenPrice={simResults.data.map(x => ({ date: x.date, price: x.price }))}
+            classicDCAValue={simResults.data.map(x => x.portfolioValueUSDCLASSIC)}
+            smartDCAValue={simResults.data.map(x => x.portfolioValueUSDSMART)}
+            smartUSDAtHand={simResults.data.map(x => x.usdAtHand)}
+            usdSavingsAccountValue={simResults.data.map(x => x.ifHoldUSDInstead)}
 
-        <Chart
-          tokenPrice={simResults.data.map(x => ({ date: x.date, price: x.price }))}
-          classicDCAValue={simResults.data.map(x => x.portfolioValueUSDCLASSIC)}
-          smartDCAValue={simResults.data.map(x => x.portfolioValueUSDSMART)}
-          smartUSDAtHand={simResults.data.map(x => x.usdAtHand)}
-          usdSavingsAccountValue={simResults.data.map(x => x.ifHoldUSDInstead)}
+            classicDCAHolding={simResults.data.map(x => x.tokenAmountCLASSIC)}
+            smartDCAHolding={simResults.data.map(x => x.tokenAmountSMART)}
 
-          classicDCAHolding={simResults.data.map(x => x.tokenAmountCLASSIC)}
-          smartDCAHolding={simResults.data.map(x => x.tokenAmountSMART)}
-
-          slope={simResults.data.map(x => x.slope)}
-          averagePrice={simResults.data.map(x => x.pastAVG)}
-        />
+            slope={simResults.data.map(x => x.slope)}
+            averagePrice={simResults.data.map(x => x.pastAVG)}
+          />
+        </div>
       </main>
 
     </div>

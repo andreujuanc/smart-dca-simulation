@@ -25,6 +25,7 @@ ChartJS.register(
 
 export const options: ChartOptions<"line"> = {
     responsive: true,
+    maintainAspectRatio: false,
     interaction: {
         mode: 'index' as const,
         intersect: false,
@@ -193,5 +194,7 @@ export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHa
         ],
     };
 
-    return <Line options={options} data={data} />;
+    return <Line options={options} data={data} style={{
+        // boxSizing: 'content-box',
+    }}  />;
 }

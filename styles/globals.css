@@ -5,7 +5,12 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   background-color: #222222;
-  color: #CCCCCC
+  color: #CCCCCC;
+  height: 100%;
+}
+
+body > div, body > div > div {
+  height: 100%;
 }
 
 a {
