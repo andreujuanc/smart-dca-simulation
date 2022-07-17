@@ -82,6 +82,7 @@
 
 .card .formGroup{
   margin: 0.3rem 0.6rem;
+  line-height: 1rem;
 }
 
 .card .formGroup label{

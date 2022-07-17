@@ -58,15 +58,21 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
     let portfolioValueUSDCLASSIC = usdAtHand
 
     let rangePrices = prices.filter(x => (!from || x.date >= from) && (!to || x.date <= to))
-    const startDateIndex = prices.findIndex(x => x.date === rangePrices[0].date)
-    rangePrices = prices.filter((_, i) => i <= startDateIndex && i > startDateIndex - slopeLengthDAYS).concat(rangePrices)
+    const startDate = rangePrices[0]?.date
+    const endDate = rangePrices[rangePrices.length - 1]?.date
+    const startDateIndex = prices.findIndex(x => x.date === startDate)
+    const endDateIndex = prices.findIndex(x => x.date === endDate)
 
-    for (let i = slopeLengthDAYS; i < prices.length; i++) {
-        const price = rangePrices[i]
+    for (let i = startDateIndex; i <= endDateIndex; i++) {
+        const price = prices[i]
         if (!price) continue;
 
-        const pastAVG = rangePrices.slice(i - slopeLengthDAYS, i).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS
-        const slope = Math.pow(pastAVG / price.price, slopeIntensity)
+        const prevAVG = prices.slice(i - slopeLengthDAYS - slopeLengthDAYS, i - slopeLengthDAYS).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS
+        const pastAVG = prices.slice(i - slopeLengthDAYS, i).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS
+
+        console.log('pastAVG', pastAVG, 'prevAVG', prevAVG)
+
+        const slope = Math.pow(pastAVG / prevAVG, slopeIntensity)
         ifHoldUSDInstead += dailyExecutionUSD
 
         let targetInUSD = dailyExecutionUSD / slope
@@ -76,7 +82,7 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         const tobuyInUSD = dailyExecutionUSD - operation
         usdAtHand += operation
 
-        console.log(slope, 'targetInUSD', targetInUSD, 'tobuyInUSD', tobuyInUSD, 'usdAtHand', usdAtHand, 'operation', diffToTarget)
+        //console.log(slope, 'targetInUSD', targetInUSD, 'tobuyInUSD', tobuyInUSD, 'usdAtHand', usdAtHand, 'operation', diffToTarget)
 
         tokenAmountSMART += tobuyInUSD / price.price
         tokenAmountCLASSIC += dailyExecutionUSD / price.price

@@ -48,12 +48,12 @@ const Home: NextPage = () => {
             </select>
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor='slope'>Slope</label>
-            <input name={"slope"} value={slope} onChange={(e) => setSlope(parseInt(e.target.value))} type={"number"} />
+            <label htmlFor='slope'>Slope AVG Days</label>
+            <input name={"slope"} value={slope} onChange={(e) => setSlope(parseInt(e.target.value))} type={"number"} min="0" max="60" />
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor='intensity'>Slope</label>
+            <label htmlFor='intensity'>Intensity ({slopeIntensity})</label>
             <input name={"intensity"} value={slopeIntensity} onChange={(e) => setSlopeIntensity(parseFloat(e.target.value))} type={"range"} min="-10" max="10" step="0.1" />
           </div>
 
@@ -63,7 +63,7 @@ const Home: NextPage = () => {
           </div> */}
           <div className={styles.formGroup}>
             <label htmlFor='executeAmount'>Execute Amount in USD</label>
-            <input name={"executeAmount"} value={executeAmount} onChange={(e) => setExecuteAmount(parseInt(e.target.value))} type={"number"} />
+            <input name={"executeAmount"} value={executeAmount} onChange={(e) => setExecuteAmount(parseInt(e.target.value))} type={"number"} min="1" max="1000" />
           </div>
 
           <div className={styles.formGroup}>
