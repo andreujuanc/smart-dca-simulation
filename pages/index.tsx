@@ -8,22 +8,23 @@ import { averagePriceSlope } from '../src'
 
 const Home: NextPage = () => {
   const [pair, setPair] = useState(prices[0].id)
-  const [slope, setSlope] = useState(10)
-  const [slopeIntensity, setSlopeIntensity] = useState(1)
+  const [slope, setSlope] = useState(7)
+  const [slopeIntensity, setSlopeIntensity] = useState(4)
   const [freq, setFreq] = useState(1)
-  const [executeAmount, setExecuteAmount] = useState(10)
-  const [from, setFrom] = useState<string>('2022-01-01')
-  const [to, setTo] = useState<string>('2022-05-01')
+  const [executeAmount, setExecuteAmount] = useState(3)
+  const [savings, setSavings]= useState(100)
+  const [from, setFrom] = useState<string>('2021-08-01')
+  const [to, setTo] = useState<string>('2022-07-01')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
 
-  const simResults = averagePriceSlope({
+  const simResults = useMemo(()=>averagePriceSlope({
     prices: tokenPrice,
     to, from,
     dailyExecutionUSD: executeAmount,
-    initialFundsUSD: 0,
+    initialFundsUSD: savings,
     slopeLengthDAYS: slope,
     slopeIntensity: slopeIntensity
-  })
+  }), [tokenPrice, to, from, executeAmount, slope, slopeIntensity, savings])
 
   console.log('slopeIntensity', slopeIntensity)
   return (
@@ -57,24 +58,32 @@ const Home: NextPage = () => {
               ))}
             </select>
           </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor='savings'>Initial Savings</label>
+            <input name={"savings"} value={savings} onChange={(e) => setSavings(parseInt(e.target.value))} type={"number"} min="0" max="1000000" />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor='executeAmount'>Execute Amount in USD</label>
+            <input name={"executeAmount"} value={executeAmount} onChange={(e) => setExecuteAmount(parseInt(e.target.value))} type={"number"} min="1" max="1000" />
+          </div>
+
           <div className={styles.formGroup}>
             <label htmlFor='slope'>Slope AVG Days</label>
-            <input name={"slope"} value={slope} onChange={(e) => setSlope(parseInt(e.target.value))} type={"number"} min="0" max="60" />
+            <input name={"slope"} value={slope} onChange={(e) => setSlope(parseInt(e.target.value))} type={"number"} min="1" max="60" />
           </div>
 
           <div className={styles.formGroup}>
             <label htmlFor='intensity'>Intensity ({slopeIntensity})</label>
-            <input name={"intensity"} value={slopeIntensity} onChange={(e) => setSlopeIntensity(parseFloat(e.target.value))} type={"range"} min="-10" max="10" step="0.1" />
+            <input name={"intensity"} value={slopeIntensity} onChange={(e) => setSlopeIntensity(parseFloat(e.target.value))} type={"range"} min="-20" max="100" step="0.1" />
           </div>
 
           {/* FREQ NOT YET IMPLEMENTED <div className={styles.formGroup}>
             <label htmlFor='freq'>Freq</label>
             <input name={"freq"} value={freq} onChange={(e) => setFreq(parseInt(e.target.value))} type={"number"} />
           </div> */}
-          <div className={styles.formGroup}>
-            <label htmlFor='executeAmount'>Execute Amount in USD</label>
-            <input name={"executeAmount"} value={executeAmount} onChange={(e) => setExecuteAmount(parseInt(e.target.value))} type={"number"} min="1" max="1000" />
-          </div>
+  
 
           <div className={styles.formGroup}>
             <label htmlFor='from'>Range</label>

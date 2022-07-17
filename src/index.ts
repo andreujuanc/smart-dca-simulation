@@ -87,7 +87,7 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
         tokenAmountSMART += tobuyInUSD / price.price
         tokenAmountCLASSIC += dailyExecutionUSD / price.price
 
-        portfolioValueUSDSMART = (tokenAmountSMART * price.price) + usdAtHand
+        portfolioValueUSDSMART = (tokenAmountSMART * price.price)
         portfolioValueUSDCLASSIC = tokenAmountCLASSIC * price.price
 
         records.push({ i, date: price.date, price: price.price, pastAVG, slope, tobuy: tobuyInUSD, usdAtHand, tokenAmountSMART: tokenAmountSMART, tokenAmountCLASSIC, portfolioValueUSDSMART, portfolioValueUSDCLASSIC, ifHoldUSDInstead })
