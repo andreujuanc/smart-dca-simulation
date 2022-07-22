@@ -21,7 +21,7 @@ const Home: NextPage = () => {
   const simResults = useMemo(() => averagePriceSlope({
     prices: tokenPrice,
     to, from,
-    dailyExecutionUSD: executeAmount,
+    executeUSD: executeAmount,
     initialFundsUSD: savings,
     slopeLengthDAYS: slope,
     slopeIntensity: slopeIntensity,
@@ -82,7 +82,7 @@ const Home: NextPage = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor='bias'>Bias ({bias}): {bias < 0 ? "DEGEN": "SAFE"}</label>
+            <label htmlFor='bias'>Bias ({bias}): {bias < 0 ? "DEGEN" : "SAFE"}</label>
             <input name={"bias"} value={bias} onChange={(e) => setBias(parseFloat(e.target.value))} type={"range"} min="-1" max="1" step="0.01" />
           </div>
 
@@ -116,12 +116,12 @@ const Home: NextPage = () => {
             display: 'flex',
             flexDirection: 'row',
           }}>
-            <div style={{ marginRight: '1rem' }}>
+            {/* <div style={{ marginRight: '1rem' }}>
               Total Tokens : {(simResults.tokenAmount / simResults.tokenInClassicDCA * 100 - 100).toFixed(2)}%
             </div>
             <div>
               Portfolio Value : {((simResults.portfolioValueUSD / simResults.portfolioValueClassicUSD) * 100 - 100).toFixed(2)}%
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -133,16 +133,9 @@ const Home: NextPage = () => {
           }}>
           <Chart
             tokenPrice={simResults.data.map(x => ({ date: x.date, price: x.price }))}
-            classicDCAValue={simResults.data.map(x => x.portfolioValueUSDCLASSIC)}
-            smartDCAValue={simResults.data.map(x => x.portfolioValueUSDSMART)}
-            smartUSDAtHand={simResults.data.map(x => x.usdAtHand)}
-            usdSavingsAccountValue={simResults.data.map(x => x.ifHoldUSDInstead)}
-
-            classicDCAHolding={simResults.data.map(x => x.tokenAmountCLASSIC)}
-            smartDCAHolding={simResults.data.map(x => x.tokenAmountSMART)}
-
-            slope={simResults.data.map(x => x.slope)}
-            averagePrice={simResults.data.map(x => x.pastAVG)}
+            classic={simResults.data.map(x => x.classic)}
+            entry={simResults.data.map(x => x.entry)}
+            smart={simResults.data.map(x => x.smart)}
           />
         </div>
       </main>

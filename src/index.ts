@@ -14,7 +14,7 @@ type SimParams = {
     slopeLengthDAYS: number,
     slopeIntensity: number,
     initialFundsUSD: number,
-    dailyExecutionUSD: number,
+    executeUSD: number,
     bias: number
     prices: Price[]
     to?: string
@@ -26,7 +26,7 @@ function runSimOnPair(pair: { name: string; data: Price[] }) {
         const initialFundsUSD = 0
         const dailyFundsUSD = 10
 
-        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD: dailyFundsUSD, slopeIntensity: 1, bias: 1 })
+        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, executeUSD: dailyFundsUSD, slopeIntensity: 1, bias: 1 })
         //console.log(`${pair.name} ${slopeLengthDAYS} ${result.tokenAmount} ${result.tokenInClassicDCA} ${result.portfolioValueUSD} ${result.ifHoldUSDInstead}`)
         //console.log(result.data)
     }
@@ -34,29 +34,45 @@ function runSimOnPair(pair: { name: string; data: Price[] }) {
 
 function clamp(num: number, min: number, max: number) { return Math.min(Math.max(num, min), max) }
 
-export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFundsUSD, dailyExecutionUSD, slopeIntensity, bias }: SimParams) {
+type StrategyItem = {
+    toBuyInUSD: number
+    price: number
+    tokens: number
+    entryPrice: number
+    totalTokenAmount: number
+    usdAmount: number
+    portfolioValueUSD: number
+}
 
+type StrategyCalculation = {
+    toBuyInUSD: number
+    usdAmount: number
+}
+
+export function averagePriceSlope(params: SimParams) {
+    const { prices, to, from, slopeLengthDAYS, initialFundsUSD, executeUSD } = params
     const records: {
         i: number
         date: string,
         price: number,
-        pastAVG: number,
-        slope: number,
-        tobuy: number,
-        usdAtHand: number,
-        tokenAmountSMART: number,
-        tokenAmountCLASSIC: number,
-        portfolioValueUSDSMART: number,
-        portfolioValueUSDCLASSIC: number,
+        priceAVG: number,
         ifHoldUSDInstead: number
+        classic: StrategyItem
+        smart: StrategyItem
+        entry: StrategyItem
+
 
     }[] = []
+
     let ifHoldUSDInstead: number = 0
-    let tokenAmountSMART = 0
-    let tokenAmountCLASSIC = 0
-    let usdAtHand = initialFundsUSD
-    let portfolioValueUSDSMART = usdAtHand
-    let portfolioValueUSDCLASSIC = usdAtHand
+    let smartResult: StrategyItem = { price: 0, tokens: 0, toBuyInUSD: 0, entryPrice: 0, portfolioValueUSD: 0, totalTokenAmount: 0, usdAmount: initialFundsUSD }
+    let classicResult: StrategyItem = { price: 0, tokens: 0, toBuyInUSD: 0, entryPrice: 0, portfolioValueUSD: 0, totalTokenAmount: 0, usdAmount: initialFundsUSD }
+    let entryResult: StrategyItem = { price: 0, tokens: 0, toBuyInUSD: 0, entryPrice: 0, portfolioValueUSD: 0, totalTokenAmount: 0, usdAmount: initialFundsUSD }
+    // let usdAtHand = initialFundsUSD
+    // let tokenAmountSMART = 0
+    // let tokenAmountCLASSIC = 0
+    // let portfolioValueUSDSMART = usdAtHand
+    // let portfolioValueUSDCLASSIC = usdAtHand
 
     let rangePrices = prices.filter(x => (!from || x.date >= from) && (!to || x.date <= to))
     const startDate = rangePrices[0]?.date
@@ -64,47 +80,111 @@ export function averagePriceSlope({ prices, to, from, slopeLengthDAYS, initialFu
     const startDateIndex = prices.findIndex(x => x.date === startDate)
     const endDateIndex = prices.findIndex(x => x.date === endDate)
     console.clear()
+
     for (let i = startDateIndex; i <= endDateIndex; i++) {
         const price = prices[i]
         if (!price) continue;
 
-        ifHoldUSDInstead += dailyExecutionUSD
+        ifHoldUSDInstead += executeUSD
 
-        const prevAVG = getAVG(prices, i - slopeLengthDAYS, slopeLengthDAYS)
-        const currentAVG = getAVG(prices, i, slopeLengthDAYS)
+        const prevAVG = getAVG(prices, i - slopeLengthDAYS, slopeLengthDAYS);
+        const priceAVG = getAVG(prices, i, slopeLengthDAYS);
 
-        const direction = currentAVG / prevAVG
-        const slope = slopeIntensity == 0 ? direction
-            : direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
-                : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
-                    : Math.pow(direction, slopeIntensity)
+        classicResult = getResult(calculateClassic(executeUSD, params), classicResult, price.price)
+        smartResult = getResult(calculateSmart(prevAVG, priceAVG, params, smartResult), smartResult, price.price)
+        entryResult = getResult(calculateEntryPrice(price.price, params, entryResult), entryResult, price.price)
 
-        let targetInUSD = dailyExecutionUSD / slope
-        const diffToTarget = dailyExecutionUSD - targetInUSD
 
-        const operation = clamp(diffToTarget, -usdAtHand, dailyExecutionUSD)
-        const tobuyInUSD = dailyExecutionUSD - operation
-        usdAtHand += operation
+        records.push({
+            i, ...price, priceAVG, ifHoldUSDInstead,
 
-        tokenAmountSMART += tobuyInUSD / price.price
-        tokenAmountCLASSIC += dailyExecutionUSD / price.price
-
-        portfolioValueUSDSMART = (tokenAmountSMART * price.price) + usdAtHand
-        portfolioValueUSDCLASSIC = (tokenAmountCLASSIC * price.price) + initialFundsUSD
-
-        records.push({ i, date: price.date, price: price.price, pastAVG: currentAVG, slope, tobuy: tobuyInUSD, usdAtHand, tokenAmountSMART: tokenAmountSMART, tokenAmountCLASSIC, portfolioValueUSDSMART, portfolioValueUSDCLASSIC, ifHoldUSDInstead })
+            classic: classicResult,
+            smart: smartResult,
+            entry: entryResult,
+        })
 
     }
     return {
         data: records,
-        tokenAmount: records[records.length - 1]?.tokenAmountSMART,
-        tokenInClassicDCA: records[records.length - 1]?.tokenAmountCLASSIC,
-        portfolioValueUSD: records[records.length - 1]?.portfolioValueUSDSMART ,
-        portfolioValueClassicUSD: records[records.length - 1]?.portfolioValueUSDCLASSIC ,
-        ifHoldUSDInstead: records[records.length - 1]?.ifHoldUSDInstead,
+        // tokenAmount: records[records.length - 1]?.tokenAmountSMART,
+        // tokenInClassicDCA: records[records.length - 1]?.tokenAmountCLASSIC,
+        // portfolioValueUSD: records[records.length - 1]?.portfolioValueUSDSMART,
+        // portfolioValueClassicUSD: records[records.length - 1]?.portfolioValueUSDCLASSIC,
+        // ifHoldUSDInstead: records[records.length - 1]?.ifHoldUSDInstead,
     }
 }
+
+function getResult(calc: StrategyCalculation, prev: StrategyItem, price: number): StrategyItem {
+    const tokensToBuy = calc.toBuyInUSD / price
+    const total = prev.totalTokenAmount + tokensToBuy
+
+    const entry =  ((prev.toBuyInUSD + calc.toBuyInUSD) / (prev.tokens + tokensToBuy) )
+
+    return {
+        price: price,
+        tokens: tokensToBuy,
+        toBuyInUSD: calc.toBuyInUSD,
+        entryPrice: prev.entryPrice == 0 ? entry : (prev.entryPrice +  entry) / 2,
+        portfolioValueUSD: (total * price) + calc.usdAmount,
+        totalTokenAmount: total,
+        usdAmount: calc.usdAmount
+    }
+}
+
+function calculateClassic(executeUSD: number, params: SimParams): StrategyCalculation {
+    return {
+        toBuyInUSD: executeUSD,
+        usdAmount: params.initialFundsUSD
+    }
+}
+
+function calculateEntryPrice(price: number, params: SimParams, prev: StrategyItem): StrategyCalculation {
+    const { slopeIntensity, bias, executeUSD } = params
+
+    const direction = prev.entryPrice == 0 ? 1 : price / prev.entryPrice;
+    const slope = slopeIntensity == 0 ? direction
+        : direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
+            : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
+                : Math.pow(direction, slopeIntensity);
+
+    let targetInUSD = executeUSD / slope;
+    const diffToTarget = executeUSD - targetInUSD;
+
+    const operation = clamp(diffToTarget, -prev.usdAmount, executeUSD);
+    const tobuyInUSD = executeUSD - operation;
+    const usdAtHand = prev.usdAmount + operation;
+
+    return {
+        toBuyInUSD: tobuyInUSD,
+        usdAmount: usdAtHand
+    }
+}
+
+
+function calculateSmart(prevAVG: number, priceAVG: number, params: SimParams, prev: StrategyItem): StrategyCalculation {
+    const { executeUSD, slopeIntensity, bias } = params
+
+    const direction = priceAVG / prevAVG;
+    const slope = slopeIntensity == 0 ? direction
+        : direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
+            : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
+                : Math.pow(direction, slopeIntensity);
+
+    let targetInUSD = executeUSD / slope;
+    const diffToTarget = executeUSD - targetInUSD;
+
+    const operation = clamp(diffToTarget, -prev.usdAmount, executeUSD);
+    const tobuyInUSD = executeUSD - operation;
+    const usdAtHand = prev.usdAmount + operation;
+
+    return {
+        toBuyInUSD: tobuyInUSD,
+        usdAmount: usdAtHand
+    }
+}
+
 function getAVG(prices: Price[], i: number, slopeLengthDAYS: number) {
     return prices.slice(i - slopeLengthDAYS, i).reduce((acc, cur) => acc + cur.price, 0) / slopeLengthDAYS;
 }
+
 

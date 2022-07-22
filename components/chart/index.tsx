@@ -88,32 +88,42 @@ export const options: ChartOptions<"line"> = {
 
 
 
+type StrategyChartData = {
+    portfolioValueUSD: number
+    totalTokenAmount: number
+    usdAmount: number
+    entryPrice: number
+}[]
 
-export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHand, usdSavingsAccountValue, classicDCAHolding, smartDCAHolding, slope, averagePrice }:
+export function Chart(params:
     {
         tokenPrice: { date: string, price: number }[],
-        classicDCAValue: number[],
-        smartDCAValue: number[],
-        smartUSDAtHand: number[],
-        usdSavingsAccountValue: number[],
-        classicDCAHolding: number[],
-        smartDCAHolding: number[],
-        slope: number[],
-        averagePrice: number[]
+        classic: StrategyChartData
+        smart: StrategyChartData
+        entry: StrategyChartData
+        // classicDCAValue: number[],
+        // classicDCAHolding: number[],
+        // smartDCAValue: number[],
+        // smartUSDAtHand: number[],
+        // usdSavingsAccountValue: number[],
+        // smartDCAHolding: number[],
+        // slope: number[],
+        // averagePrice: number[]
     }) {
-    const labels = tokenPrice.map(x => x.date)
+    const labels = params.tokenPrice.map(x => x.date)
+
 
     const data: ChartData<'line', number[], string> = {
         labels,
         datasets: [
             {
                 label: 'Token Price',
-                data: tokenPrice.map(x => x.price),
+                data: params.tokenPrice.map(x => x.price),
                 pointRadius: 0,
                 borderColor: 'rgba(50, 220, 50)',
                 backgroundColor: 'rgba(50, 220, 50)',
                 yAxisID: 'y',
-                hidden: true
+                hidden: false
             },
             // {
             //     label: 'Slope',
@@ -123,70 +133,133 @@ export function Chart({ tokenPrice, classicDCAValue, smartDCAValue, smartUSDAtHa
             //     yAxisID: 'y3',
             //     borderColor: 'rgb(0,0,0)',
             // },
-            {
-                label: 'Price AVG',
-                data: averagePrice,
-                pointRadius: 0,
-                borderColor: 'rgba(225, 165, 0, 1)',
-                backgroundColor: 'rgba(225, 165, 0, 1)',
-                yAxisID: 'y',
-                hidden: true
-            },
+            // {
+            //     label: 'Price AVG',
+            //     data: averagePrice,
+            //     pointRadius: 0,
+            //     borderColor: 'rgba(225, 165, 0, 1)',
+            //     backgroundColor: 'rgba(225, 165, 0, 1)',
+            //     yAxisID: 'y',
+            //     hidden: true
+            // },
+
+
             {
                 label: 'Classic DCA Portfolio Value',
-                data: classicDCAValue,
+                data: params.classic.map(x => x.portfolioValueUSD),
                 pointRadius: 0,
-                borderColor: 'rgba(220, 90, 80)',
-                backgroundColor: 'rgba(220, 90, 80)',
+                borderColor: 'hsl(4deg 95% 60%)',
+                backgroundColor: 'hsl(4deg 95% 60%)',
                 yAxisID: 'y1',
                 hidden: true
             },
             {
-                label: 'Smart DCA Portfolio Value',
-                data: smartDCAValue,
+                label: 'Classic DCA Tokens',
+                data: params.classic.map(x => x.totalTokenAmount),
                 pointRadius: 0,
-                borderColor: 'rgb(60, 100, 240)',
-                backgroundColor: 'rgb(60, 100, 240)',
-                yAxisID: 'y1',
-                hidden: true
-            },
-            {
-                label: 'Smart DCA USD Value',
-                data: smartUSDAtHand,
-                pointRadius: 0,
-                borderColor: 'rgb(10, 30, 250)',
-                backgroundColor: 'rgb(10, 30, 250)',
-                yAxisID: 'y1',
-                hidden: true
-            },
-            {
-                label: 'USD Savings Account',
-                data: usdSavingsAccountValue,
-                pointRadius: 0,
-                borderColor: 'rgb(190, 30, 250)',
-                backgroundColor: 'rgb(190, 30, 250)',
-                yAxisID: 'y1',
-                hidden: true
-            },
-            {
-                label: 'Classic DCA Holding',
-                data: classicDCAHolding,
-                pointRadius: 0,
-                borderColor: 'rgba(250, 120, 100)',
-                backgroundColor: 'rgba(250, 120, 100)',
+                borderColor: 'hsl(4deg 90% 70%)',
+                backgroundColor: 'hsl(4deg 90% 70%)',
                 yAxisID: 'y2',
                 hidden: false
 
             },
             {
-                label: 'Smart DCA Holding',
-                data: smartDCAHolding,
+                label: 'Classic DCA Entry Price',
+                data: params.classic.map(x => x.entryPrice),
                 pointRadius: 0,
-                borderColor: 'rgba(100, 120, 255)',
-                backgroundColor: 'rgba(100, 120, 255)',
+                borderColor: 'hsl(4deg 90% 80%)',
+                backgroundColor: 'hsl(4deg 90% 80%)',
+                yAxisID: 'y',
+                hidden: false
+
+            },
+
+            {
+                label: 'Smart DCA Portfolio Value',
+                data: params.smart.map(x => x.portfolioValueUSD),
+                pointRadius: 0,
+                borderColor: 'hsl(220deg 95% 40%)',
+                backgroundColor: 'hsl(220deg 95% 40%)',
+                yAxisID: 'y1',
+                hidden: true
+            },
+            {
+                label: 'Smart DCA Tokens',
+                data: params.smart.map(x => x.totalTokenAmount),
+                pointRadius: 0,
+                borderColor: 'hsl(220deg 95% 55%)',
+                backgroundColor: 'hsl(220deg 95% 55%)',
+                yAxisID: 'y2',
+                hidden: true
+            },
+            {
+                label: 'Smart DCA USD Value',
+                data: params.smart.map(x => x.usdAmount),
+                pointRadius: 0,
+                borderColor: 'hsl(220deg 95% 70%)',
+                backgroundColor: 'hsl(220deg 95% 70%)',
+                yAxisID: 'y1',
+                hidden: true
+            },
+            {
+                label: 'Smart DCA Entry Price',
+                data: params.smart.map(x => x.entryPrice),
+                pointRadius: 0,
+                borderColor: 'hsl(220deg 95% 80%)',
+                backgroundColor: 'hsl(220deg 95% 80%)',
+                yAxisID: 'y',
+                hidden: true
+            },
+
+
+            // {
+            //     label: 'EntryPrice DCA Portfolio Value',
+            //     data: params.entry.map(x => x.portfolioValueUSD),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(45deg 95% 60%)',
+            //     backgroundColor: 'hsl(45deg 95% 60%)',
+            //     yAxisID: 'y1',
+            //     hidden: false
+            // },
+            {
+                label: 'EntryPrice DCA Tokens',
+                data: params.entry.map(x => x.totalTokenAmount),
+                pointRadius: 0,
+                borderColor: 'hsl(45deg 90% 70%)',
+                backgroundColor: 'hsl(45deg 90% 70%)',
                 yAxisID: 'y2',
                 hidden: false
             },
+            {
+                label: 'EntryPrice DCA Entry Price',
+                data: params.entry.map(x => x.entryPrice),
+                pointRadius: 0,
+                borderColor: 'hsl(45deg 95% 80%)',
+                backgroundColor: 'hsl(45deg 95% 80%)',
+                yAxisID: 'y',
+                hidden: false
+            },
+
+
+            // {
+            //     label: 'USD Savings Account',
+            //     data: usdSavingsAccountValue,
+            //     pointRadius: 0,
+            //     borderColor: 'rgb(190, 30, 250)',
+            //     backgroundColor: 'rgb(190, 30, 250)',
+            //     yAxisID: 'y1',
+            //     hidden: true
+            // },
+
+            // {
+            //     label: 'Smart DCA Holding',
+            //     data: smartDCAHolding,
+            //     pointRadius: 0,
+            //     borderColor: 'rgba(100, 120, 255)',
+            //     backgroundColor: 'rgba(100, 120, 255)',
+            //     yAxisID: 'y2',
+            //     hidden: false
+            // },
         ],
     };
 
