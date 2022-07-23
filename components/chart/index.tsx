@@ -151,7 +151,7 @@ export function Chart(params:
                 borderColor: 'hsl(4deg 95% 60%)',
                 backgroundColor: 'hsl(4deg 95% 60%)',
                 yAxisID: 'y1',
-                hidden: true
+                hidden: false
             },
             {
                 label: 'Classic DCA Tokens',
@@ -160,7 +160,7 @@ export function Chart(params:
                 borderColor: 'hsl(4deg 90% 70%)',
                 backgroundColor: 'hsl(4deg 90% 70%)',
                 yAxisID: 'y2',
-                hidden: false
+                hidden: true
 
             },
             {
@@ -170,9 +170,12 @@ export function Chart(params:
                 borderColor: 'hsl(4deg 90% 80%)',
                 backgroundColor: 'hsl(4deg 90% 80%)',
                 yAxisID: 'y',
-                hidden: false
+                hidden: true
 
             },
+
+
+
 
             {
                 label: 'Smart DCA Portfolio Value',
@@ -181,7 +184,7 @@ export function Chart(params:
                 borderColor: 'hsl(220deg 95% 40%)',
                 backgroundColor: 'hsl(220deg 95% 40%)',
                 yAxisID: 'y1',
-                hidden: true
+                hidden: false
             },
             {
                 label: 'Smart DCA Tokens',
@@ -212,15 +215,15 @@ export function Chart(params:
             },
 
 
-            // {
-            //     label: 'EntryPrice DCA Portfolio Value',
-            //     data: params.entry.map(x => x.portfolioValueUSD),
-            //     pointRadius: 0,
-            //     borderColor: 'hsl(45deg 95% 60%)',
-            //     backgroundColor: 'hsl(45deg 95% 60%)',
-            //     yAxisID: 'y1',
-            //     hidden: false
-            // },
+            {
+                label: 'EntryPrice DCA Portfolio Value',
+                data: params.entry.map(x => x.portfolioValueUSD),
+                pointRadius: 0,
+                borderColor: 'hsl(45deg 90% 50%)',
+                backgroundColor: 'hsl(45deg 90% 50%)',
+                yAxisID: 'y1',
+                hidden: false
+            },
             {
                 label: 'EntryPrice DCA Tokens',
                 data: params.entry.map(x => x.totalTokenAmount),
@@ -228,7 +231,7 @@ export function Chart(params:
                 borderColor: 'hsl(45deg 90% 70%)',
                 backgroundColor: 'hsl(45deg 90% 70%)',
                 yAxisID: 'y2',
-                hidden: false
+                hidden: true
             },
             {
                 label: 'EntryPrice DCA Entry Price',
@@ -237,7 +240,7 @@ export function Chart(params:
                 borderColor: 'hsl(45deg 95% 80%)',
                 backgroundColor: 'hsl(45deg 95% 80%)',
                 yAxisID: 'y',
-                hidden: false
+                hidden: true
             },
 
 

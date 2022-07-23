@@ -116,17 +116,18 @@ export function averagePriceSlope(params: SimParams) {
 
 function getResult(calc: StrategyCalculation, prev: StrategyItem, price: number): StrategyItem {
     const tokensToBuy = calc.toBuyInUSD / price
-    const total = prev.totalTokenAmount + tokensToBuy
-
-    const entry =  ((prev.toBuyInUSD + calc.toBuyInUSD) / (prev.tokens + tokensToBuy) )
+    const totalTokens = prev.totalTokenAmount + tokensToBuy
+    //(prev.portfolioValueUSD + calc.toBuyInUSD) 
+    const entry = ((prev.entryPrice * prev.totalTokenAmount) + calc.toBuyInUSD) / totalTokens
+    console.log(prev.portfolioValueUSD, calc.toBuyInUSD, totalTokens, price, entry)
 
     return {
         price: price,
         tokens: tokensToBuy,
         toBuyInUSD: calc.toBuyInUSD,
-        entryPrice: prev.entryPrice == 0 ? entry : (prev.entryPrice +  entry) / 2,
-        portfolioValueUSD: (total * price) + calc.usdAmount,
-        totalTokenAmount: total,
+        entryPrice: entry,
+        portfolioValueUSD: (totalTokens * price) + calc.usdAmount,
+        totalTokenAmount: totalTokens,
         usdAmount: calc.usdAmount
     }
 }
@@ -142,6 +143,7 @@ function calculateEntryPrice(price: number, params: SimParams, prev: StrategyIte
     const { slopeIntensity, bias, executeUSD } = params
 
     const direction = prev.entryPrice == 0 ? 1 : price / prev.entryPrice;
+
     const slope = slopeIntensity == 0 ? direction
         : direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
             : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
