@@ -32,9 +32,10 @@ async function savePrices(address: string, name: string) {
     const to = new Date().toISOString().split('T')[0];
     const token = address;
 
-    const url = `https://api.covalenthq.com/v1/pricing/historical_by_addresses_v2/1/USD/${token}/?quote-currency=USD&format=JSON&from=${from}&to=${to}&prices-at-asc=true&key=ckey_0f1f054c0b774a74accad72f551`;
+    const url = `https://api.covalenthq.com/v1/pricing/historical_by_addresses_v2/1/USD/${token}/?quote-currency=USD&format=JSON&from=${from}&to=${to}&prices-at-asc=true&key=${process.env.COVALENT_API_KEY}`;
     const response = await fetch(url);
     const result = (await response.json()) as any;
+    
     const prices = result.data[0]?.prices.map((x: any) => ({
         price: x.price,
         date: x.date

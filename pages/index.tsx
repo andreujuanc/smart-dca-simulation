@@ -15,7 +15,7 @@ const Home: NextPage = () => {
   const [executeAmount, setExecuteAmount] = useState(10)
   const [savings, setSavings] = useState(0)
   const [from, setFrom] = useState<string>('2022-01-10')
-  const [to, setTo] = useState<string>('2022-03-10')
+  const [to, setTo] = useState<string>('2022-12-25')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
 
   const simResults = useMemo(() => averagePriceSlope({

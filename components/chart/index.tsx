@@ -144,25 +144,25 @@ export function Chart(params:
             // },
 
 
-            {
-                label: 'Classic DCA Portfolio Value',
-                data: params.classic.map(x => x.portfolioValueUSD),
-                pointRadius: 0,
-                borderColor: 'hsl(4deg 95% 60%)',
-                backgroundColor: 'hsl(4deg 95% 60%)',
-                yAxisID: 'y1',
-                hidden: false
-            },
-            {
-                label: 'Classic DCA Tokens',
-                data: params.classic.map(x => x.totalTokenAmount),
-                pointRadius: 0,
-                borderColor: 'hsl(4deg 90% 70%)',
-                backgroundColor: 'hsl(4deg 90% 70%)',
-                yAxisID: 'y2',
-                hidden: true
+            // {
+            //     label: 'Classic DCA Portfolio Value',
+            //     data: params.classic.map(x => x.portfolioValueUSD),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(4deg 95% 60%)',
+            //     backgroundColor: 'hsl(4deg 95% 60%)',
+            //     yAxisID: 'y1',
+            //     hidden: false
+            // },
+            // {
+            //     label: 'Classic DCA Tokens',
+            //     data: params.classic.map(x => x.totalTokenAmount),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(4deg 90% 70%)',
+            //     backgroundColor: 'hsl(4deg 90% 70%)',
+            //     yAxisID: 'y2',
+            //     hidden: true
 
-            },
+            // },
             {
                 label: 'Classic DCA Entry Price',
                 data: params.classic.map(x => x.entryPrice),
@@ -170,78 +170,78 @@ export function Chart(params:
                 borderColor: 'hsl(4deg 90% 80%)',
                 backgroundColor: 'hsl(4deg 90% 80%)',
                 yAxisID: 'y',
-                hidden: true
-
-            },
-
-
-
-
-            {
-                label: 'Smart DCA Portfolio Value',
-                data: params.smart.map(x => x.portfolioValueUSD),
-                pointRadius: 0,
-                borderColor: 'hsl(220deg 95% 40%)',
-                backgroundColor: 'hsl(220deg 95% 40%)',
-                yAxisID: 'y1',
                 hidden: false
-            },
-            {
-                label: 'Smart DCA Tokens',
-                data: params.smart.map(x => x.totalTokenAmount),
-                pointRadius: 0,
-                borderColor: 'hsl(220deg 95% 55%)',
-                backgroundColor: 'hsl(220deg 95% 55%)',
-                yAxisID: 'y2',
-                hidden: true
-            },
-            {
-                label: 'Smart DCA USD Value',
-                data: params.smart.map(x => x.usdAmount),
-                pointRadius: 0,
-                borderColor: 'hsl(220deg 95% 70%)',
-                backgroundColor: 'hsl(220deg 95% 70%)',
-                yAxisID: 'y1',
-                hidden: true
-            },
-            {
-                label: 'Smart DCA Entry Price',
-                data: params.smart.map(x => x.entryPrice),
-                pointRadius: 0,
-                borderColor: 'hsl(220deg 95% 80%)',
-                backgroundColor: 'hsl(220deg 95% 80%)',
-                yAxisID: 'y',
-                hidden: true
+
             },
 
 
-            {
-                label: 'EntryPrice DCA Portfolio Value',
-                data: params.entry.map(x => x.portfolioValueUSD),
-                pointRadius: 0,
-                borderColor: 'hsl(45deg 90% 50%)',
-                backgroundColor: 'hsl(45deg 90% 50%)',
-                yAxisID: 'y1',
-                hidden: false
-            },
-            {
-                label: 'EntryPrice DCA Tokens',
-                data: params.entry.map(x => x.totalTokenAmount),
-                pointRadius: 0,
-                borderColor: 'hsl(45deg 90% 70%)',
-                backgroundColor: 'hsl(45deg 90% 70%)',
-                yAxisID: 'y2',
-                hidden: true
-            },
-            {
-                label: 'EntryPrice DCA Entry Price',
-                data: params.entry.map(x => x.entryPrice),
-                pointRadius: 0,
-                borderColor: 'hsl(45deg 95% 80%)',
-                backgroundColor: 'hsl(45deg 95% 80%)',
-                yAxisID: 'y',
-                hidden: true
-            },
+
+
+            // {
+            //     label: 'Smart DCA Portfolio Value',
+            //     data: params.smart.map(x => x.portfolioValueUSD),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(220deg 95% 40%)',
+            //     backgroundColor: 'hsl(220deg 95% 40%)',
+            //     yAxisID: 'y1',
+            //     hidden: false
+            // },
+            // {
+            //     label: 'Smart DCA Tokens',
+            //     data: params.smart.map(x => x.totalTokenAmount),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(220deg 95% 55%)',
+            //     backgroundColor: 'hsl(220deg 95% 55%)',
+            //     yAxisID: 'y2',
+            //     hidden: true
+            // },
+            // {
+            //     label: 'Smart DCA USD Value',
+            //     data: params.smart.map(x => x.usdAmount),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(220deg 95% 70%)',
+            //     backgroundColor: 'hsl(220deg 95% 70%)',
+            //     yAxisID: 'y1',
+            //     hidden: true
+            // },
+            // {
+            //     label: 'Smart DCA Entry Price',
+            //     data: params.smart.map(x => x.entryPrice),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(220deg 95% 80%)',
+            //     backgroundColor: 'hsl(220deg 95% 80%)',
+            //     yAxisID: 'y',
+            //     hidden: true
+            // },
+
+
+            // {
+            //     label: 'EntryPrice DCA Portfolio Value',
+            //     data: params.entry.map(x => x.portfolioValueUSD),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(45deg 90% 50%)',
+            //     backgroundColor: 'hsl(45deg 90% 50%)',
+            //     yAxisID: 'y1',
+            //     hidden: false
+            // },
+            // {
+            //     label: 'EntryPrice DCA Tokens',
+            //     data: params.entry.map(x => x.totalTokenAmount),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(45deg 90% 70%)',
+            //     backgroundColor: 'hsl(45deg 90% 70%)',
+            //     yAxisID: 'y2',
+            //     hidden: true
+            // },
+            // {
+            //     label: 'EntryPrice DCA Entry Price',
+            //     data: params.entry.map(x => x.entryPrice),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(45deg 95% 80%)',
+            //     backgroundColor: 'hsl(45deg 95% 80%)',
+            //     yAxisID: 'y',
+            //     hidden: true
+            // },
 
 
             // {
