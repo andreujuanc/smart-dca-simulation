@@ -26,7 +26,7 @@ function runSimOnPair(pair: { name: string; data: Price[] }) {
         const initialFundsUSD = 0
         const dailyFundsUSD = 10
 
-        const result = averagePriceSlope({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, executeUSD: dailyFundsUSD, slopeIntensity: 1, bias: 1 })
+        const result = runSim({ prices: pair.data, slopeLengthDAYS, initialFundsUSD, executeUSD: dailyFundsUSD, slopeIntensity: 1, bias: 1 })
         //console.log(`${pair.name} ${slopeLengthDAYS} ${result.tokenAmount} ${result.tokenInClassicDCA} ${result.portfolioValueUSD} ${result.ifHoldUSDInstead}`)
         //console.log(result.data)
     }
@@ -49,7 +49,7 @@ type StrategyCalculation = {
     usdAmount: number
 }
 
-export function averagePriceSlope(params: SimParams) {
+export function runSim(params: SimParams) {
     const { prices, to, from, slopeLengthDAYS, initialFundsUSD, executeUSD } = params
     const records: {
         i: number
@@ -60,6 +60,7 @@ export function averagePriceSlope(params: SimParams) {
         classic: StrategyItem
         smart: StrategyItem
         entry: StrategyItem
+        dc: StrategyItem
 
 
     }[] = []
@@ -68,11 +69,8 @@ export function averagePriceSlope(params: SimParams) {
     let smartResult: StrategyItem = { price: 0, tokens: 0, toBuyInUSD: 0, entryPrice: 0, portfolioValueUSD: 0, totalTokenAmount: 0, usdAmount: initialFundsUSD }
     let classicResult: StrategyItem = { price: 0, tokens: 0, toBuyInUSD: 0, entryPrice: 0, portfolioValueUSD: 0, totalTokenAmount: 0, usdAmount: initialFundsUSD }
     let entryResult: StrategyItem = { price: 0, tokens: 0, toBuyInUSD: 0, entryPrice: 0, portfolioValueUSD: 0, totalTokenAmount: 0, usdAmount: initialFundsUSD }
-    // let usdAtHand = initialFundsUSD
-    // let tokenAmountSMART = 0
-    // let tokenAmountCLASSIC = 0
-    // let portfolioValueUSDSMART = usdAtHand
-    // let portfolioValueUSDCLASSIC = usdAtHand
+    let dcInvestorResult: StrategyItem = { price: 0, tokens: 0, toBuyInUSD: 0, entryPrice: 0, portfolioValueUSD: 0, totalTokenAmount: 0, usdAmount: initialFundsUSD }
+
 
     let rangePrices = prices.filter(x => (!from || x.date >= from) && (!to || x.date <= to))
     const startDate = rangePrices[0]?.date
@@ -93,7 +91,7 @@ export function averagePriceSlope(params: SimParams) {
         classicResult = getResult(calculateClassic(executeUSD, params), classicResult, price.price)
         smartResult = getResult(calculateSmart(prevAVG, priceAVG, params, smartResult), smartResult, price.price)
         entryResult = getResult(calculateEntryPrice(price.price, params, entryResult), entryResult, price.price)
-
+        dcInvestorResult = getResult(calculateDCInvestor(price.price, params, dcInvestorResult), dcInvestorResult, price.price)
 
         records.push({
             i, ...price, priceAVG, ifHoldUSDInstead,
@@ -101,34 +99,30 @@ export function averagePriceSlope(params: SimParams) {
             classic: classicResult,
             smart: smartResult,
             entry: entryResult,
+            dc: dcInvestorResult
         })
 
     }
     return {
         data: records,
-        // tokenAmount: records[records.length - 1]?.tokenAmountSMART,
-        // tokenInClassicDCA: records[records.length - 1]?.tokenAmountCLASSIC,
-        // portfolioValueUSD: records[records.length - 1]?.portfolioValueUSDSMART,
-        // portfolioValueClassicUSD: records[records.length - 1]?.portfolioValueUSDCLASSIC,
-        // ifHoldUSDInstead: records[records.length - 1]?.ifHoldUSDInstead,
     }
 }
 
-function getResult(calc: StrategyCalculation, prev: StrategyItem, price: number): StrategyItem {
-    const tokensToBuy = calc.toBuyInUSD / price
+function getResult(step: StrategyCalculation, prev: StrategyItem, price: number): StrategyItem {
+    const tokensToBuy = step.toBuyInUSD / price
     const totalTokens = prev.totalTokenAmount + tokensToBuy
     //(prev.portfolioValueUSD + calc.toBuyInUSD) 
-    const entry = ((prev.entryPrice * prev.totalTokenAmount) + calc.toBuyInUSD) / totalTokens
-    console.log(prev.portfolioValueUSD, calc.toBuyInUSD, totalTokens, price, entry)
+    const entry = ((prev.entryPrice * prev.totalTokenAmount) + step.toBuyInUSD) / totalTokens
+    console.log(prev.portfolioValueUSD, step.toBuyInUSD, totalTokens, price, entry)
 
     return {
         price: price,
         tokens: tokensToBuy,
-        toBuyInUSD: calc.toBuyInUSD,
+        toBuyInUSD: step.toBuyInUSD,
         entryPrice: entry,
-        portfolioValueUSD: (totalTokens * price) + calc.usdAmount,
+        portfolioValueUSD: (totalTokens * price) + step.usdAmount,
         totalTokenAmount: totalTokens,
-        usdAmount: calc.usdAmount
+        usdAmount: step.usdAmount
     }
 }
 
@@ -142,19 +136,23 @@ function calculateClassic(executeUSD: number, params: SimParams): StrategyCalcul
 function calculateEntryPrice(price: number, params: SimParams, prev: StrategyItem): StrategyCalculation {
     const { slopeIntensity, bias, executeUSD } = params
 
-    const direction = prev.entryPrice == 0 ? 1 : price / prev.entryPrice;
+    const tobuyInUSD = price > prev.entryPrice ? executeUSD / slopeIntensity : executeUSD * slopeIntensity
+    const usdAtHand = 0
 
-    const slope = slopeIntensity == 0 ? direction
-        : direction > 1 && bias > 0 ? Math.pow(direction, slopeIntensity * (1 + bias))
-            : direction < 1 && bias < 0 ? Math.pow(direction, slopeIntensity * (1 + Math.abs(bias)))
-                : Math.pow(direction, slopeIntensity);
+    return {
+        toBuyInUSD: tobuyInUSD,
+        usdAmount: usdAtHand
+    }
+}
 
-    let targetInUSD = executeUSD / slope;
-    const diffToTarget = executeUSD - targetInUSD;
+function calculateDCInvestor(price: number, params: SimParams, prev: StrategyItem): StrategyCalculation {
+    const { slopeIntensity, bias, executeUSD } = params
 
-    const operation = clamp(diffToTarget, -prev.usdAmount, executeUSD);
-    const tobuyInUSD = executeUSD - operation;
-    const usdAtHand = prev.usdAmount + operation;
+    let tobuyInUSD =
+        price < 1000 ? executeUSD * 2 :
+            price < 1400 ? executeUSD : 0
+
+    const usdAtHand = 0
 
     return {
         toBuyInUSD: tobuyInUSD,

@@ -101,6 +101,7 @@ export function Chart(params:
         classic: StrategyChartData
         smart: StrategyChartData
         entry: StrategyChartData
+        dc: StrategyChartData
         // classicDCAValue: number[],
         // classicDCAHolding: number[],
         // smartDCAValue: number[],
@@ -160,7 +161,7 @@ export function Chart(params:
             //     borderColor: 'hsl(4deg 90% 70%)',
             //     backgroundColor: 'hsl(4deg 90% 70%)',
             //     yAxisID: 'y2',
-            //     hidden: true
+            //     hidden: false
 
             // },
             {
@@ -226,22 +227,42 @@ export function Chart(params:
             // },
             // {
             //     label: 'EntryPrice DCA Tokens',
+            //     data: params.dc.map(x => x.totalTokenAmount),
+            //     pointRadius: 0,
+            //     borderColor: 'hsl(45deg 90% 70%)',
+            //     backgroundColor: 'hsl(45deg 90% 70%)',
+            //     yAxisID: 'y2',
+            //     hidden: false
+            // },
+            {
+                label: 'EntryPrice DCA Entry Price',
+                data: params.entry.map(x => x.entryPrice),
+                pointRadius: 0,
+                borderColor: 'hsl(45deg 95% 80%)',
+                backgroundColor: 'hsl(45deg 95% 80%)',
+                yAxisID: 'y',
+                hidden: false
+            },
+
+
+            // {
+            //     label: 'DCInvestor DCA Tokens',
             //     data: params.entry.map(x => x.totalTokenAmount),
             //     pointRadius: 0,
             //     borderColor: 'hsl(45deg 90% 70%)',
             //     backgroundColor: 'hsl(45deg 90% 70%)',
             //     yAxisID: 'y2',
-            //     hidden: true
+            //     hidden: false
             // },
-            // {
-            //     label: 'EntryPrice DCA Entry Price',
-            //     data: params.entry.map(x => x.entryPrice),
-            //     pointRadius: 0,
-            //     borderColor: 'hsl(45deg 95% 80%)',
-            //     backgroundColor: 'hsl(45deg 95% 80%)',
-            //     yAxisID: 'y',
-            //     hidden: true
-            // },
+            {
+                label: 'DCInvestor DCA Entry Price',
+                data: params.dc.map(x => x.entryPrice),
+                pointRadius: 0,
+                borderColor: 'hsl(170deg 95% 80%)',
+                backgroundColor: 'hsl(170deg 95% 80%)',
+                yAxisID: 'y',
+                hidden: false
+            },
 
 
             // {

@@ -4,7 +4,7 @@ import { Chart } from '../components/chart'
 import styles from '../styles/Home.module.css'
 import { prices } from '../data'
 import { useMemo, useState } from 'react'
-import { averagePriceSlope } from '../src'
+import { runSim } from '../src'
 
 const Home: NextPage = () => {
   const [pair, setPair] = useState(prices[0].id)
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
   const [to, setTo] = useState<string>('2022-12-25')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
 
-  const simResults = useMemo(() => averagePriceSlope({
+  const simResults = useMemo(() => runSim({
     prices: tokenPrice,
     to, from,
     executeUSD: executeAmount,
@@ -61,24 +61,24 @@ const Home: NextPage = () => {
             </select>
           </div>
 
-          <div className={styles.formGroup}>
+          {/* <div className={styles.formGroup}>
             <label htmlFor='savings'>Initial Savings</label>
             <input name={"savings"} value={savings} onChange={(e) => setSavings(parseInt(e.target.value))} type={"number"} min="0" max="1000000" />
-          </div>
+          </div> */}
 
-          <div className={styles.formGroup}>
+          {/* <div className={styles.formGroup}>
             <label htmlFor='executeAmount'>Execute Amount in USD</label>
             <input name={"executeAmount"} value={executeAmount} onChange={(e) => setExecuteAmount(parseInt(e.target.value))} type={"number"} min="1" max="1000" />
-          </div>
+          </div> */}
 
-          <div className={styles.formGroup}>
+          {/* <div className={styles.formGroup}>
             <label htmlFor='slope'>Slope AVG Days</label>
             <input name={"slope"} value={slope} onChange={(e) => setSlope(parseInt(e.target.value))} type={"number"} min="1" max="60" />
-          </div>
+          </div> */}
 
           <div className={styles.formGroup}>
             <label htmlFor='intensity'>Intensity ({slopeIntensity})</label>
-            <input name={"intensity"} value={slopeIntensity} onChange={(e) => setSlopeIntensity(parseFloat(e.target.value))} type={"range"} min="-2" max="10" step="0.1" />
+            <input name={"intensity"} value={slopeIntensity} onChange={(e) => setSlopeIntensity(parseFloat(e.target.value))} type={"range"} min="0" max="10" step="0.1" />
           </div>
 
           <div className={styles.formGroup}>
@@ -136,6 +136,7 @@ const Home: NextPage = () => {
             classic={simResults.data.map(x => x.classic)}
             entry={simResults.data.map(x => x.entry)}
             smart={simResults.data.map(x => x.smart)}
+            dc={simResults.data.map(x=>x.dc)}
           />
         </div>
       </main>
