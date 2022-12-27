@@ -7,14 +7,14 @@ import { useMemo, useState } from 'react'
 import { runSim } from '../src'
 
 const Home: NextPage = () => {
-  const [pair, setPair] = useState(prices[0].id)
+  const [pair, setPair] = useState(prices[1].id)
   const [slope, setSlope] = useState(7)
   const [slopeIntensity, setSlopeIntensity] = useState(5)
   const [bias, setBias] = useState(0.5)
   const [freq, setFreq] = useState(1)
   const [executeAmount, setExecuteAmount] = useState(10)
   const [savings, setSavings] = useState(0)
-  const [from, setFrom] = useState<string>('2022-01-10')
+  const [from, setFrom] = useState<string>('2022-10-01')
   const [to, setTo] = useState<string>('2022-12-25')
   const tokenPrice = useMemo(() => (prices.find(x => x.id == pair)?.data) ?? [], [pair])
 

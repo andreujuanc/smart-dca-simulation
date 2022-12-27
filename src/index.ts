@@ -136,7 +136,9 @@ function calculateClassic(executeUSD: number, params: SimParams): StrategyCalcul
 function calculateEntryPrice(price: number, params: SimParams, prev: StrategyItem): StrategyCalculation {
     const { slopeIntensity, bias, executeUSD } = params
 
-    const tobuyInUSD = price > prev.entryPrice ? executeUSD / slopeIntensity : executeUSD * slopeIntensity
+    const delta = (prev.entryPrice - price) / price
+    let tobuyInUSD = price > prev.entryPrice ? executeUSD / slopeIntensity : executeUSD * slopeIntensity
+    tobuyInUSD *= delta < 0 ? 1 : 1 + (delta *bias * slopeIntensity) 
     const usdAtHand = 0
 
     return {
